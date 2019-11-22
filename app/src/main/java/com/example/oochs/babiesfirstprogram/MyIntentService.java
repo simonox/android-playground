@@ -1,8 +1,11 @@
 package com.example.oochs.babiesfirstprogram;
 
 import android.app.IntentService;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.Context;
+import android.content.IntentFilter;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -85,6 +88,11 @@ public class MyIntentService extends IntentService {
                     finalPage += appendData;
                 }
                 Log.wtf("IntentService", finalPage);
+                Intent dataIntent = new Intent();
+                dataIntent.setAction("com.example.oochs.babiesfirstprogram.SEND_DATA");
+                dataIntent.putExtra("downloadedPage", finalPage);
+                sendBroadcast(dataIntent);
+
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (IOException e) {

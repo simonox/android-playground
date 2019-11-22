@@ -1,7 +1,9 @@
 package com.example.oochs.babiesfirstprogram;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -24,6 +26,14 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
 
+    BroadcastReceiver dataReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String data = intent.getStringExtra("downloadedPage");
+            Log.wtf("DATA", data);
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +49,10 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, MyIntentService.class);
         intent.putExtra("url", "http://www.example.com/");
         startService(intent);
+
+
+        IntentFilter filter = new IntentFilter("com.example.oochs.babiesfirstprogram.SEND_DATA");
+        registerReceiver(dataReceiver, filter);
 
         if (sharedPreferences.getString("USERNAME", ""). isEmpty()) {
             greeting.setVisibility(View.GONE);
@@ -84,5 +98,9 @@ public class MainActivity extends AppCompatActivity {
         inputField.setText("Welcome back");
     }
 
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(dataReceiver);
+    }
 }
