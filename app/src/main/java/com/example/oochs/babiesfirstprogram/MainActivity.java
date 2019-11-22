@@ -36,6 +36,10 @@ public class MainActivity extends AppCompatActivity {
         okButton = (Button) findViewById(R.id.the_button);
         greeting = (TextView) findViewById(R.id.greeting);
 
+        Intent intent = new Intent(MainActivity.this, MyIntentService.class);
+        intent.putExtra("url", "http://www.example.com/");
+        startService(intent);
+
         if (sharedPreferences.getString("USERNAME", ""). isEmpty()) {
             greeting.setVisibility(View.GONE);
             Log.wtf("Main preference", "USERNAME is empty");
@@ -62,7 +66,8 @@ public class MainActivity extends AppCompatActivity {
                                 startActivity(launchActivityIntent);
                             }
                         }).show();
-            }
+                }
+
         });
 
     }
