@@ -1,6 +1,8 @@
 package com.example.oochs.babiesfirstprogram;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.DataOutputStream;
@@ -16,25 +19,46 @@ public class MainActivity extends AppCompatActivity {
 
     EditText inputField;
     Button okButton;
+    TextView greeting;
+
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        sharedPreferences = getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+
         inputField = (EditText) findViewById(R.id.name_input);
         okButton = (Button) findViewById(R.id.the_button);
+        greeting = (TextView) findViewById(R.id.greeting);
+
+        if (sharedPreferences.getString("USERNAME", ""). isEmpty()) {
+            greeting.setVisibility(View.GONE);
+            Log.wtf("Main preference", "USERNAME is empty");
+        } else {
+            greeting.setVisibility(View.VISIBLE);
+            String name = sharedPreferences.getString("USERNAME", "");
+            greeting.setText("Welcome back " + name);
+            inputField.setText(name);
+            Log.wtf("Main preference", name );
+
+        }
 
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String name = inputField.getText().toString();
-
+                final String name = inputField.getText().toString();
+                editor.putString("USERNAME", name).apply();
                 Snackbar.make(view, "Hello " + name, Snackbar.LENGTH_LONG)
                         .setAction("OK", new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 Intent launchActivityIntent = new Intent(MainActivity.this, SoBadImNotTheMainActivity.class);
+                                launchActivityIntent.putExtra("name", name);
                                 startActivity(launchActivityIntent);
                             }
                         }).show();
